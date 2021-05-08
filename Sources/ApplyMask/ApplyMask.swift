@@ -11,6 +11,9 @@ private struct Arguments: ParsableArguments {
     
     @Option(help: "Output image")
     var output: String
+    
+    @Option(help: "Mask is inverted")
+    var inverted: Bool = false
 }
 
 struct ApplyMask: ParsableCommand {
@@ -21,8 +24,9 @@ struct ApplyMask: ParsableCommand {
     
     func run() {
         let sourceImage = cgImageFromPng(at: arguments.source)
-        let mask = cgImageFromPng(at: arguments.mask).mask()!
-        let outputImage = sourceImage.masking(mask, backgroundColor: .black)
+        let rawMask = cgImageFromPng(at: arguments.mask)
+        let mask = arguments.inverted ? rawMask.colorInverted().mask() : rawMask.mask()
+        let outputImage = sourceImage.masking(mask)!.renderedWithBackground(.black)
         savePng(outputImage, at: arguments.output)
     }
 

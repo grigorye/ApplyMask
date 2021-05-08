@@ -7,22 +7,20 @@ extension CGImage {
         masking(mask)!.renderedWithBackground(backgroundColor)
     }
     
-    func mask() -> CGImage? {
-        let colorInverted = self.colorInverted()!
-        
-        return CGImage(
+    func mask() -> CGImage {
+        CGImage(
             maskWidth: width,
             height: height,
-            bitsPerComponent: colorInverted.bitsPerComponent,
-            bitsPerPixel: colorInverted.bitsPerPixel,
-            bytesPerRow: colorInverted.bytesPerRow,
-            provider: colorInverted.dataProvider!,
+            bitsPerComponent: bitsPerComponent,
+            bitsPerPixel: bitsPerPixel,
+            bytesPerRow: bytesPerRow,
+            provider: dataProvider!,
             decode: nil,
             shouldInterpolate: false
         )!
     }
     
-    private func colorInverted() -> CGImage? {
+    func colorInverted() -> CGImage {
         let ciImage = CIImage(cgImage: self)
         let filter = CIFilter(name: "CIColorInvert")!
         filter.setDefaults()
@@ -32,14 +30,14 @@ extension CGImage {
         return context.createCGImage(outputImage, from: outputImage.extent)!
     }
     
-    private func renderedWithBackground(_ color: CGColor) -> CGImage {
+    func renderedWithBackground(_ color: CGColor) -> CGImage {
         let context = CGContext(
             data: nil,
             width: width,
             height: height,
             bitsPerComponent: bitsPerComponent,
             bytesPerRow: bytesPerRow,
-            space: colorSpace!,
+            space: CGColorSpace(name: CGColorSpace.sRGB)!,
             bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue
         )!
         let frame = CGRect(origin: .zero, size: .init(width: width, height: height))
